@@ -56,6 +56,15 @@ public class MetricsPersistenceAdapter implements MetricsPersistencePort {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<ConversationMetric> findAbandonedByPeriod(Instant from, Instant to) {
+        log.debug("Querying abandoned metrics: from={}, to={}", from, to);
+        List<ConversationMetricEntity> entities =
+                conversationMetricRepository.findByAbandonedTrueAndStartTimeBetween(from, to);
+        return conversationMetricMapper.toDomainList(entities);
+    }
+
+    @Override
     @Transactional
     public void saveWebhookEvent(WebhookEvent event) {
         if (webhookEventRepository.existsByEventId(event.eventId())) {

@@ -12,5 +12,7 @@ public interface MetricsPersistencePort {
 
     List<ConversationMetric> findByQueueAndPeriod(String queueId, Instant from, Instant to);
 
+    List<ConversationMetric> findAbandonedByPeriod(Instant from, Instant to);
+
     void saveWebhookEvent(WebhookEvent event);
 }
