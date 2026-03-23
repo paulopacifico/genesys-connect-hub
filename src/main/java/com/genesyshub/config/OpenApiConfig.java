@@ -2,8 +2,11 @@ package com.genesyshub.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
@@ -13,7 +16,11 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Genesys Connect Hub API")
-                        .description("API for Genesys Cloud integration hub")
-                        .version("1.0.0"));
+                        .description("REST API for Genesys Cloud integration — queues, agents, metrics, webhooks")
+                        .version("1.0.0"))
+                .servers(List.of(
+                        new Server().url("http://localhost:8080").description("Local"),
+                        new Server().url("http://app:8080").description("Docker")
+                ));
     }
 }
