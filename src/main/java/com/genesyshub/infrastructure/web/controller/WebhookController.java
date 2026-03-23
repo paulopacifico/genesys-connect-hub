@@ -31,8 +31,11 @@ public class WebhookController {
     @ApiResponse(responseCode = "202", description = "Event accepted for processing")
     @ApiResponse(responseCode = "400", description = "Invalid request body")
     public ResponseEntity<Void> receiveEvent(@Valid @RequestBody WebhookEventRequest request) {
+        String resolvedEventId = (request.eventId() != null && !request.eventId().isBlank())
+                ? request.eventId()
+                : UUID.randomUUID().toString();
         WebhookEvent event = new WebhookEvent(
-                UUID.randomUUID().toString(),
+                resolvedEventId,
                 request.topicName(),
                 request.version(),
                 request.payload(),

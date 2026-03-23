@@ -1,6 +1,7 @@
 package com.genesyshub.config;
 
 import com.genesyshub.domain.port.out.AgentPort;
+import com.genesyshub.domain.port.out.WebhookPersistencePort;
 import com.genesyshub.domain.port.out.ConversationMetricPort;
 import com.genesyshub.domain.port.out.GenesysHealthPort;
 import com.genesyshub.domain.port.out.QueuePort;
@@ -80,5 +81,11 @@ public class GenesysTestConfig {
     @Primary
     public GenesysHealthPort genesysHealthPort() {
         return Mockito.mock(GenesysHealthPort.class);
+    }
+
+    @Bean
+    @Primary
+    public WebhookPersistencePort webhookPersistencePort() {
+        return Mockito.mock(WebhookPersistencePort.class);
     }
 }

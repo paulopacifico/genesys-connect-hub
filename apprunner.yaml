@@ -1,0 +1,29 @@
+# AWS App Runner service configuration reference
+# For image-based deployments (ECR), configure this in the AWS Console or CDK:
+#
+# HealthCheckConfiguration:
+#   Protocol: HTTP
+#   Path: /actuator/health
+#   Interval: 10        # seconds between checks
+#   Timeout: 5          # seconds before timeout
+#   HealthyThreshold: 1
+#   UnhealthyThreshold: 5
+#
+# Port: 8080
+#
+# Environment variables required (set as App Runner env vars or Secrets Manager references):
+#   GENESYS_CLIENT_ID        → AWS Secrets Manager: arn:aws:secretsmanager:...:secret:genesys/client-id
+#   GENESYS_CLIENT_SECRET    → AWS Secrets Manager: arn:aws:secretsmanager:...:secret:genesys/client-secret
+#   GENESYS_REGION           → mypurecloud.com (or your region)
+#   DB_URL                   → jdbc:postgresql://<rds-endpoint>:5432/genesyshub
+#   DB_USERNAME              → AWS Secrets Manager
+#   DB_PASSWORD              → AWS Secrets Manager
+#
+# Recommended instance configuration:
+#   Cpu: 1 vCPU
+#   Memory: 2 GB
+#
+# Auto scaling:
+#   MinSize: 1
+#   MaxSize: 5
+#   MaxConcurrency: 100    # requests per instance before scaling

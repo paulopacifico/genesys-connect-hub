@@ -154,6 +154,35 @@ The app will be available at `http://localhost:8080`.
 
 ---
 
+## Deploying to AWS App Runner
+
+### Prerequisites
+- ECR repository created
+- RDS PostgreSQL 16 instance in a VPC
+- AWS Secrets Manager secrets for credentials
+
+### Steps
+
+1. **Build and push to ECR:**
+   ```bash
+   aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account>.dkr.ecr.us-east-1.amazonaws.com
+   docker build -t genesys-connect-hub .
+   docker tag genesys-connect-hub:latest <account>.dkr.ecr.us-east-1.amazonaws.com/genesys-connect-hub:latest
+   docker push <account>.dkr.ecr.us-east-1.amazonaws.com/genesys-connect-hub:latest
+   ```
+
+2. **Create App Runner service** with:
+   - **Port:** `8080`
+   - **Health check path:** `/actuator/health`
+   - **Environment variables:** set all variables from `.env.example`
+   - **Instance:** 1 vCPU / 2 GB RAM minimum
+
+3. **VPC connector:** required to reach RDS — attach your VPC connector in the App Runner networking settings.
+
+See `apprunner.yaml` for the full configuration reference.
+
+---
+
 ## API Documentation
 
 Once running, open:

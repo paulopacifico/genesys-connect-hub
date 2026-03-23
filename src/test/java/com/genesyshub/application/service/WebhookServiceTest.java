@@ -1,7 +1,7 @@
 package com.genesyshub.application.service;
 
 import com.genesyshub.domain.model.WebhookEvent;
-import com.genesyshub.domain.port.out.MetricsPersistencePort;
+import com.genesyshub.domain.port.out.WebhookPersistencePort;
 import com.genesyshub.util.TestFixtures;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 class WebhookServiceTest {
 
     @Mock
-    private MetricsPersistencePort metricsPersistencePort;
+    private WebhookPersistencePort metricsPersistencePort;
 
     @InjectMocks
     private WebhookService webhookService;

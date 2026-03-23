@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -91,14 +91,56 @@ public class GenesysConversationAdapter implements ConversationMetricPort {
                     conv.getConversationId(),
                     queueId,
                     null,
-                    conv.getOriginatingDirection() != null ? conv.getOriginatingDirection().toString() : null,
-                    conv.getOriginatingDirection() != null ? conv.getOriginatingDirection().toString() : null,
+                    extractMediaType(conv),                                                              // mediaType
+                    conv.getOriginatingDirection() != null ? conv.getOriginatingDirection().toString() : null,  // direction
                     startTime,
                     endTime,
                     handleTime,
-                    false
+                    isAbandoned(conv)
             ));
         }
         return metrics;
+    }
+
+    /**
+     * Derives the media type from the first session found across all participants.
+     * Defaults to "voice" when participant or session data is absent.
+     */
+    private String extractMediaType(AnalyticsConversationWithoutAttributes conv) {
+        if (conv.getParticipants() == null) {
+            log.debug("No participant data for conversationId={}; defaulting mediaType to 'voice'",
+                    conv.getConversationId());
+            return "voice";
+        }
+        return conv.getParticipants().stream()
+                .filter(p -> p.getSessions() != null && !p.getSessions().isEmpty())
+                .flatMap(p -> p.getSessions().stream())
+                .map(s -> s.getMediaType() != null ? s.getMediaType().toString().toLowerCase() : null)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse("voice");
+    }
+
+    /**
+     * A conversation is considered abandoned when a queue/IVR segment was reached
+     * but no agent INTERACT segment exists — i.e. the customer hung up before an
+     * agent answered.
+     * Returns false when participant detail data is not present in the response.
+     */
+    private boolean isAbandoned(AnalyticsConversationWithoutAttributes conv) {
+        if (conv.getParticipants() == null) {
+            log.debug("No participant data for conversationId={}; defaulting abandoned to false",
+                    conv.getConversationId());
+            return false;
+        }
+        boolean hasQueueSegment = conv.getParticipants().stream()
+                .anyMatch(p -> "acd".equalsIgnoreCase(p.getPurpose()) || "ivr".equalsIgnoreCase(p.getPurpose()));
+        boolean hasAgentInteraction = conv.getParticipants().stream()
+                .filter(p -> "agent".equalsIgnoreCase(p.getPurpose()))
+                .flatMap(p -> p.getSessions() != null ? p.getSessions().stream() : java.util.stream.Stream.empty())
+                .flatMap(s -> s.getSegments() != null ? s.getSegments().stream() : java.util.stream.Stream.empty())
+                .anyMatch(seg -> "interact".equalsIgnoreCase(
+                        seg.getSegmentType() != null ? seg.getSegmentType().toString() : ""));
+        return hasQueueSegment && !hasAgentInteraction;
     }
 }

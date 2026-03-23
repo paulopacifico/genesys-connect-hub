@@ -7,7 +7,6 @@ import com.genesyshub.domain.port.out.ConversationMetricPort;
 import com.genesyshub.domain.port.out.MetricsPersistencePort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,12 +25,13 @@ public class MetricsService implements MetricsUseCase {
 
     private final ConversationMetricPort conversationMetricPort;
     private final MetricsPersistencePort metricsPersistencePort;
+    private final AsyncPersistenceService asyncPersistenceService;
 
     @Override
     public List<ConversationMetric> getMetricsByQueue(String queueId, Instant from, Instant to) {
         log.debug("Fetching metrics for queueId={}, from={}, to={}", queueId, from, to);
         List<ConversationMetric> metrics = conversationMetricPort.fetchConversationMetrics(queueId, from, to);
-        persistAsync(metrics);
+        asyncPersistenceService.persistMetricsAsync(metrics);
         return metrics;
     }
 
@@ -62,15 +62,6 @@ public class MetricsService implements MetricsUseCase {
     }
 
     // -------------------------------------------------------------------------
-
-    @Async
-    protected void persistAsync(List<ConversationMetric> metrics) {
-        try {
-            metricsPersistencePort.saveMetrics(metrics);
-        } catch (Exception e) {
-            log.warn("Async metrics persistence failed: {}", e.getMessage());
-        }
-    }
 
     private String formatPeriod(Instant from, Instant to) {
         LocalDate start = from.atOffset(ZoneOffset.UTC).toLocalDate();

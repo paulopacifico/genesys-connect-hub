@@ -1,7 +1,7 @@
 package com.genesyshub.integration;
 
 import com.genesyshub.domain.model.WebhookEvent;
-import com.genesyshub.domain.port.out.MetricsPersistencePort;
+import com.genesyshub.domain.port.out.WebhookPersistencePort;
 import com.genesyshub.infrastructure.persistence.repository.WebhookEventRepository;
 import com.genesyshub.util.TestFixtures;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WebhookEventPersistenceIT extends AbstractIntegrationTest {
 
     @Autowired
-    private MetricsPersistencePort metricsPersistencePort;
+    private WebhookPersistencePort metricsPersistencePort;
 
     @Autowired
     private WebhookEventRepository repository;

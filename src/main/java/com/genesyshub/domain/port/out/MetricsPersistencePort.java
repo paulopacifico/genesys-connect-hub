@@ -1,7 +1,6 @@
 package com.genesyshub.domain.port.out;
 
 import com.genesyshub.domain.model.ConversationMetric;
-import com.genesyshub.domain.model.WebhookEvent;
 
 import java.time.Instant;
 import java.util.List;
@@ -13,6 +12,4 @@ public interface MetricsPersistencePort {
     List<ConversationMetric> findByQueueAndPeriod(String queueId, Instant from, Instant to);
 
     List<ConversationMetric> findAbandonedByPeriod(Instant from, Instant to);
-
-    void saveWebhookEvent(WebhookEvent event);
 }

@@ -3,6 +3,7 @@ package com.genesyshub.infrastructure.persistence;
 import com.genesyshub.domain.model.ConversationMetric;
 import com.genesyshub.domain.model.WebhookEvent;
 import com.genesyshub.domain.port.out.MetricsPersistencePort;
+import com.genesyshub.domain.port.out.WebhookPersistencePort;
 import com.genesyshub.infrastructure.persistence.entity.ConversationMetricEntity;
 import com.genesyshub.infrastructure.persistence.mapper.ConversationMetricMapper;
 import com.genesyshub.infrastructure.persistence.mapper.WebhookEventMapper;
@@ -19,7 +20,7 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MetricsPersistenceAdapter implements MetricsPersistencePort {
+public class MetricsPersistenceAdapter implements MetricsPersistencePort, WebhookPersistencePort {
 
     private final ConversationMetricRepository conversationMetricRepository;
     private final WebhookEventRepository webhookEventRepository;

@@ -6,6 +6,7 @@ import com.genesyshub.domain.port.in.QueueUseCase;
 import com.genesyshub.domain.port.out.QueuePort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class QueueService implements QueueUseCase {
     private final QueuePort queuePort;
 
     @Override
+    @Cacheable("queues")
     public List<Queue> listAllQueues() {
         List<Queue> queues = queuePort.fetchAllQueues();
         log.info("Listed {} queues", queues.size());
@@ -34,7 +36,7 @@ public class QueueService implements QueueUseCase {
 
     @Override
     public List<Queue> findQueuesByMediaType(String mediaType) {
-        return queuePort.fetchAllQueues().stream()
+        return listAllQueues().stream()   // reuses cached result
                 .filter(q -> q.mediaTypes() != null && q.mediaTypes().contains(mediaType))
                 .toList();
     }

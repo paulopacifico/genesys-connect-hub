@@ -45,7 +45,8 @@ public class GenesysQueueAdapter implements QueuePort {
                             .forEach(result::add);
                 }
                 pageNumber++;
-            } while (Boolean.TRUE.equals(page.getNextUri() != null));
+            // getNextUri() returns null (not empty string) when there are no more pages
+            } while (page.getNextUri() != null);
 
             log.info("Fetched {} queues from Genesys Cloud in {}ms",
                     result.size(), System.currentTimeMillis() - start);
