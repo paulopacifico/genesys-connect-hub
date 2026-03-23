@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: genesyshub-postgres
+    environment:
+      POSTGRES_DB: genesyshub
+      POSTGRES_USER: ${DB_USERNAME:-genesys}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-genesys}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-genesys} -d genesyshub"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: genesyshub-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_USERNAME: ${DB_USERNAME:-genesys}
+      DB_PASSWORD: ${DB_PASSWORD:-genesys}
+      GENESYS_CLIENT_ID: ${GENESYS_CLIENT_ID}
+      GENESYS_CLIENT_SECRET: ${GENESYS_CLIENT_SECRET}
+      GENESYS_REGION: ${GENESYS_REGION:-mypurecloud.com}
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:
