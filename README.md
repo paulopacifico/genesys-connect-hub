@@ -40,9 +40,9 @@ A production-ready Spring Boot 3.3 integration hub for **Genesys Cloud**, built 
 │                   └───────────┘ │                   └───────────┘   │
 │                                 │                                   │
 │              ┌──────────────────┴─────────────────────┐             │
-│              │           DOMAIN MODEL                  │            │
-│              │  Queue · Agent · ConversationMetric     │            │
-│              │  WebhookEvent · ApiHealthStatus         │            │
+│              │           DOMAIN MODEL                 │             │
+│              │  Queue · Agent · ConversationMetric    │             │
+│              │  WebhookEvent · ApiHealthStatus        │             │
 │              └────────────────────────────────────────┘             │
 └─────────────────────────────────────────────────────────────────────┘
          │                                       │
