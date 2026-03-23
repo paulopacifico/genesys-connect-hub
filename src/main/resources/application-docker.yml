@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/genesyshub
+    username: ${DB_USERNAME:genesys}
+    password: ${DB_PASSWORD:genesys}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  flyway:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,flyway
+  endpoint:
+    health:
+      show-details: always
+
+genesys:
+  client-id: ${GENESYS_CLIENT_ID}
+  client-secret: ${GENESYS_CLIENT_SECRET}
+  region: ${GENESYS_REGION:mypurecloud.com}

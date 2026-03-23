@@ -1,9 +1,17 @@
 version: '3.9'
 
+networks:
+  genesys-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+
 services:
   postgres:
     image: postgres:16-alpine
     container_name: genesyshub-postgres
+    env_file: .env
     environment:
       POSTGRES_DB: genesyshub
       POSTGRES_USER: ${DB_USERNAME:-genesys}
@@ -12,18 +20,21 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - genesys-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-genesys} -d genesyshub"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: genesyshub-app
-    depends_on:
-      postgres:
-        condition: service_healthy
+    env_file: .env
     environment:
       SPRING_PROFILES_ACTIVE: docker
       DB_USERNAME: ${DB_USERNAME:-genesys}
@@ -33,6 +44,9 @@ services:
       GENESYS_REGION: ${GENESYS_REGION:-mypurecloud.com}
     ports:
       - "8080:8080"
-
-volumes:
-  postgres_data:
+    networks:
+      - genesys-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: on-failure
